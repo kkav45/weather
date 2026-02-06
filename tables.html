@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Метеоанализ БВС | Таблицы</title>
+    
+    <!-- OpenLayers Styles (CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@7.4.0/ol.css">
+    
+    <!-- Font Awesome (CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+  
+    
+    <!-- Chart.js Styles -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css">
+    
+    <!-- Основные стили приложения -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/tables.css">
+    <link rel="stylesheet" href="css/print.css">
+    
+    <style>
+        /* Специфичные стили для страницы таблиц */
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .page-header h1 i {
+            font-size: 36px;
+        }
+        
+        .route-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+        
+        .calendar-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            min-width: 250px;
+        }
+        
+        .calendar-container .selector-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .date-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #2c3e50;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .date-select:focus {
+            border-color: white;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+            outline: none;
+        }
+        
+        .route-selector-container {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .route-selector-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .polygon-route-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #2c3e50;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .polygon-route-select:focus {
+            border-color: white;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+            outline: none;
+        }
+        
+        .tabs-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .tabs-header {
+            display: flex;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0;
+            border-bottom: 3px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 18px 15px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tab-btn i {
+            font-size: 20px;
+        }
+        
+        .tab-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .tab-btn.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: white;
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 25px;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-top: 15px;
+            background: white;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+            font-size: 15px;
+        }
+        
+        .data-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            padding: 15px 12px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+        }
+        
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eaeaea;
+            vertical-align: middle;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .data-table tr:hover {
+            background-color: #e3f2fd;
+        }
+        
+        .status-safe {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        .status-warning {
+            color: #f39c12;
+            font-weight: 600;
+        }
+        
+        .status-danger {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        .risk-high {
+            background: #ffebee;
+            color: #c62828;
+            font-weight: 600;
+            border-radius: 6px;
+            padding: 3px 8px;
+            display: inline-block;
+        }
+        
+        .risk-medium {
+            background: #fff8e1;
+            color: #e65100;
+            font-weight: 600;
+            border-radius: 6px;
+            padding: 3px 8px;
+            display: inline-block;
+        }
+        
+        .risk-low {
+            background: #e8f5e9;
+            color: #2e7d32;
+            font-weight: 600;
+            border-radius: 6px;
+            padding: 3px 8px;
+            display: inline-block;
+        }
+        
+        .no-data-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+            font-size: 18px;
+        }
+        
+        .no-data-message i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        
+        .load-data-prompt {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin: 30px auto;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .load-data-prompt h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .load-data-prompt p {
+            font-size: 18px;
+            margin-bottom: 25px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .empty-state-icon {
+            font-size: 80px;
+            margin-bottom: 25px;
+            opacity: 0.2;
+        }
+        
+        .table-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .table-description {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #3498db;
+            transition: all 0.3s ease;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .summary-card.safe {
+            border-top-color: #27ae60;
+        }
+        
+        .summary-card.warning {
+            border-top-color: #f39c12;
+        }
+        
+        .summary-card.danger {
+            border-top-color: #e74c3c;
+        }
+        
+        .card-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .card-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        
+        .card-subtitle {
+            font-size: 14px;
+            color: #95a5a6;
+            text-align: center;
+        }
+        
+        .summary-details {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+        
+        .summary-details h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .safety-assessment {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .assessment-item {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .assessment-label {
+            font-weight: 500;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .assessment-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .critical-periods {
+            background: #fff8e1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .route-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .calendar-container,
+            .route-selector-container {
+                min-width: 100%;
+            }
+            
+            .tabs-header {
+                flex-wrap: wrap;
+            }
+            
+            .tab-btn {
+                min-width: 120px;
+                font-size: 14px;
+                padding: 12px 8px;
+            }
+            
+            .tab-btn i {
+                font-size: 16px;
+            }
+            
+            .page-header {
+                padding: 20px;
+            }
+            
+            .page-header h1 {
+                font-size: 24px;
+            }
+            
+            .page-header h1 i {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-cloud-sun"></i>
+                <span>Метеоанализ БВС</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="charts.html">Графики</a></li>
+                <li><a href="tables.html" class="active">Таблицы</a></li>
+                <li><a href="report.html">Отчет</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="btn-icon" id="settingsBtn" title="Настройки">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="tables-container">
+        <!-- Заголовок страницы -->
+        <div class="page-header">
+            <h1><i class="fas fa-table"></i> Табличные данные метеоанализа</h1>
+            <div class="route-controls">
+                <div class="calendar-container">
+                    <label class="selector-label" for="dateSelectTables">
+                        <i class="fas fa-calendar-alt"></i> Дата анализа:
+                    </label>
+                    <input type="date" id="dateSelectTables" class="date-select">
+                </div>
+                <div class="route-selector-container">
+                    <label class="route-selector-label" for="polygonSelectTables">
+                        <i class="fas fa-draw-polygon"></i> Полигон:
+                    </label>
+                    <select id="polygonSelectTables" class="polygon-route-select">
+                        <option value="">Выберите дату с данными</option>
+                    </select>
+                    
+                    <label class="route-selector-label" for="routeSelectTables" style="margin-top: 15px;">
+                        <i class="fas fa-route"></i> Маршрут:
+                    </label>
+                    <select id="routeSelectTables" class="polygon-route-select">
+                        <option value="">Выберите полигон</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Вкладки с таблицами -->
+        <div class="tabs-container">
+            <div class="tabs-header">
+                <button class="tab-btn active" data-tab="hourly">
+                    <i class="fas fa-clock"></i>
+                    <span>Почасовой прогноз</span>
+                </button>
+                <button class="tab-btn" data-tab="wind">
+                    <i class="wi wi-strong-wind"></i>
+                    <span>Ветровой профиль</span>
+                </button>
+                <button class="tab-btn" data-tab="icing">
+                    <i class="wi wi-snow"></i>
+                    <span>Риск обледенения</span>
+                </button>
+                <button class="tab-btn" data-tab="visibility">
+                    <i class="wi wi-day-haze"></i>
+                    <span>Видимость</span>
+                </button>
+                <button class="tab-btn" data-tab="summary">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Сводка</span>
+                </button>
+            </div>
+            
+            <!-- Почасовой прогноз -->
+            <div class="tab-content active" id="tab-hourly">
+                <h2 class="table-title"><i class="fas fa-clock"></i> Почасовой прогноз метеоусловий</h2>
+                <p class="table-description">Данные на 24 часа для выбранного маршрута</p>
+                <div class="table-container">
+                    <table class="data-table" id="hourlyTable">
+                        <thead>
+                            <tr>
+                                <th>Время</th>
+                                <th><i class="wi wi-thermometer"></i> Темп. (°C)</th>
+                                <th><i class="wi wi-humidity"></i> Влажность (%)</th>
+                                <th><i class="wi wi-strong-wind"></i> Ветер (м/с)</th>
+                                <th><i class="wi wi-cloudy-gusts"></i> Порывы (м/с)</th>
+                                <th><i class="wi wi-wind-direction"></i> Напр. ветра</th>
+                                <th><i class="wi wi-day-haze"></i> Видимость (км)</th>
+                                <th><i class="wi wi-cloudy"></i> Обл. (%)</th>
+                                <th><i class="wi wi-rain"></i> Осадки (мм)</th>
+                                <th><i class="wi wi-barometer"></i> Давление (гПа)</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Данные будут загружены динамически -->
+                            <tr>
+                                <td colspan="11" style="text-align: center; padding: 40px; color: #7f8c8d;">
+                                    <i class="fas fa-info-circle" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                                    <div>Выберите дату, полигон и маршрут для отображения данных</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Ветровой профиль -->
+            <div class="tab-content" id="tab-wind">
+                <h2 class="table-title"><i class="wi wi-strong-wind"></i> Ветровой профиль по высотам</h2>
+                <p class="table-description">Скорость и направление ветра на различных высотах</p>
+                <div class="table-container">
+                    <table class="data-table" id="windTable">
+                        <thead>
+                            <tr>
+                                <th>Время</th>
+                                <th>Высота (м)</th>
+                                <th><i class="wi wi-strong-wind"></i> Скорость (м/с)</th>
+                                <th><i class="wi wi-wind-direction"></i> Направление</th>
+                                <th><i class="wi wi-cloudy-gusts"></i> Порывы (м/с)</th>
+                                <th><i class="wi wi-wind-direction"></i> Сдвиг напр. (°)</th>
+                                <th>Сдвиг скор. (м/с)</th>
+                                <th>Риск сдвига</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 40px; color: #7f8c8d;">
+                                    <i class="fas fa-info-circle" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                                    <div>Выберите дату, полигон и маршрут для отображения данных</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Риск обледенения -->
+            <div class="tab-content" id="tab-icing">
+                <h2 class="table-title"><i class="wi wi-snow"></i> Анализ риска обледенения</h2>
+                <p class="table-description">Оценка условий для образования обледенения по часам</p>
+                <div class="table-container">
+                    <table class="data-table" id="icingTable">
+                        <thead>
+                            <tr>
+                                <th>Время</th>
+                                <th><i class="wi wi-thermometer"></i> Темп. (°C)</th>
+                                <th>Точка росы (°C)</th>
+                                <th><i class="wi wi-humidity"></i> Влажность (%)</th>
+                                <th><i class="wi wi-rain"></i> Осадки (мм)</th>
+                                <th>Тип осадков</th>
+                                <th>Высота 0°C (м)</th>
+                                <th>Риск</th>
+                                <th>Рекомендация</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="9" style="text-align: center; padding: 40px; color: #7f8c8d;">
+                                    <i class="fas fa-info-circle" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                                    <div>Выберите дату, полигон и маршрут для отображения данных</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Видимость -->
+            <div class="tab-content" id="tab-visibility">
+                <h2 class="table-title"><i class="wi wi-day-haze"></i> Прогноз видимости</h2>
+                <p class="table-description">Оценка видимости и метеорологических условий</p>
+                <div class="table-container">
+                    <table class="data-table" id="visibilityTable">
+                        <thead>
+                            <tr>
+                                <th>Время</th>
+                                <th><i class="wi wi-day-haze"></i> Видимость (км)</th>
+                                <th>Тип помех</th>
+                                <th>Интенсивность</th>
+                                <th>Высота нижней границы (м)</th>
+                                <th>Рекомендация</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 40px; color: #7f8c8d;">
+                                    <i class="fas fa-info-circle" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                                    <div>Выберите дату, полигон и маршрут для отображения данных</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Сводка -->
+            <div class="tab-content" id="tab-summary">
+                <h2 class="table-title"><i class="fas fa-tachometer-alt"></i> Сводная таблица параметров</h2>
+                <p class="table-description">Итоговые показатели метеоусловий для принятия решения</p>
+                <div class="summary-grid">
+                    <div class="summary-card safe">
+                        <div class="card-icon"><i class="wi wi-day-sunny"></i></div>
+                        <div class="card-title">Светлое время</div>
+                        <div class="card-value" id="summaryDaylight">-</div>
+                        <div class="card-subtitle">Восход/Закат</div>
+                    </div>
+                    
+                    <div class="summary-card warning">
+                        <div class="card-icon"><i class="wi wi-strong-wind"></i></div>
+                        <div class="card-title">Макс. порывы</div>
+                        <div class="card-value" id="summaryMaxGusts">-</div>
+                        <div class="card-subtitle">на высоте 120м</div>
+                    </div>
+                    
+                    <div class="summary-card safe">
+                        <div class="card-icon"><i class="wi wi-day-haze"></i></div>
+                        <div class="card-title">Мин. видимость</div>
+                        <div class="card-value" id="summaryMinVisibility">-</div>
+                        <div class="card-subtitle">в период осадков</div>
+                    </div>
+                    
+                    <div class="summary-card warning">
+                        <div class="card-icon"><i class="wi wi-snow"></i></div>
+                        <div class="card-title">Риск обледенения</div>
+                        <div class="card-value" id="summaryIcingRisk">-</div>
+                        <div class="card-subtitle">период повышенного риска</div>
+                    </div>
+                    
+                    <div class="summary-card safe">
+                        <div class="card-icon"><i class="wi wi-lightning"></i></div>
+                        <div class="card-title">Грозовая активность</div>
+                        <div class="card-value" id="summaryCape">-</div>
+                        <div class="card-subtitle">макс. значение CAPE</div>
+                    </div>
+                    
+                    <div class="summary-card safe">
+                        <div class="card-icon"><i class="fas fa-clock"></i></div>
+                        <div class="card-title">Окно безопасности</div>
+                        <div class="card-value" id="summarySafetyWindow">-</div>
+                        <div class="card-subtitle">продолжительность</div>
+                    </div>
+                </div>
+                
+                <div class="summary-details">
+                    <h3><i class="fas fa-shield-alt"></i> Итоговая оценка безопасности</h3>
+                    <div class="safety-assessment">
+                        <div class="assessment-item">
+                            <span class="assessment-label">Общий статус:</span>
+                            <span class="assessment-value" id="summaryStatus">-</span>
+                        </div>
+                        <div class="assessment-item">
+                            <span class="assessment-label">Рейтинг безопасности:</span>
+                            <span class="assessment-value" id="summaryRating">-</span>
+                        </div>
+                        <div class="assessment-item">
+                            <span class="assessment-label">Макс. дальность полета:</span>
+                            <span class="assessment-value" id="summaryMaxDistance">-</span>
+                        </div>
+                        <div class="assessment-item">
+                            <span class="assessment-label">Рекомендуемая высота:</span>
+                            <span class="assessment-value" id="summaryRecommendedAltitude">-</span>
+                        </div>
+                        <div class="assessment-item">
+                            <span class="assessment-label">Критические периоды:</span>
+                            <span class="assessment-value critical-periods" id="summaryCriticalPeriods">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Индикатор загрузки -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Загрузка данных...</div>
+    </div>
+    
+    <!-- Уведомление -->
+    <div class="notification" id="notification">
+        <div class="notification-icon info">
+            <i class="fas fa-info"></i>
+        </div>
+        <div class="notification-content">
+            <div class="notification-title">Заголовок</div>
+            <div class="notification-message">Сообщение</div>
+        </div>
+    </div>
+
+    <!-- Overlay для закрытия модальных окон -->
+    <div class="sidebar-overlay" id="modalOverlay"></div>
+
+    <!-- Подключение библиотек -->
+    <script src="https://cdn.jsdelivr.net/npm/ol@7.4.0/dist/ol.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+
+    <!-- Подключение локальных скриптов -->
+    <script src="js/utils/constants.js"></script>
+    <script src="js/utils/formatters.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/core/app.js"></script>
+    <script src="js/core/router.js"></script>
+    <script src="js/core/data-manager.js"></script>
+    <script src="js/core/pdf-generator.js"></script>
+    <script src="js/visualization/tables-manager.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация менеджера таблиц
+            if (typeof TablesManager !== 'undefined') {
+                window.tablesManager = new TablesManager();
+            }
+            
+            // Установка текущей даты
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('dateSelectTables').valueAsDate = tomorrow;
+            
+            // Если база данных уже инициализирована и содержит данные
+            if (window.meteoApp && window.meteoApp.state.databaseInitialized) {
+                const dates = window.meteoApp.getDatesWithData();
+                if (dates.length > 0) {
+                    // Выбираем последнюю доступную дату
+                    const lastDate = dates[dates.length - 1];
+                    document.getElementById('dateSelectTables').value = lastDate;
+                    
+                    // Загружаем данные за эту дату
+                    const weatherData = window.meteoApp.getWeatherDataByDate(lastDate);
+                    if (weatherData && window.tablesManager) {
+                        window.tablesManager.updateData(weatherData);
+                    }
+                }
+            }
+        });
+    </script>
+    
+    <!-- Стили для закругленных кнопок навигации -->
+    <style>
+        .nav-actions .btn-icon {
+            border-radius: 50% !important;
+            width: 40px !important;
+            height: 40px !important;
+            min-width: 40px !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Метеоанализ БВС | Генератор отчета</title>
+    
+    <!-- OpenLayers Styles (CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@7.4.0/ol.css">
+    
+    <!-- Font Awesome (CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- Основные стили приложения -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/report.css">
+    <link rel="stylesheet" href="css/print.css">
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-cloud-sun"></i>
+                <span>Метеоанализ БВС</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="charts.html">Графики</a></li>
+                <li><a href="tables.html">Таблицы</a></li>
+                <li><a href="report.html" class="active">Отчет</a></li>
+            </ul>
+            <div class="nav-actions">
+                <div class="date-display" id="currentDateDisplay"></div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="report-container">
+        <div class="page-header">
+            <h1><i class="fas fa-file-pdf"></i> Генератор отчета о метеоусловиях</h1>
+            <p class="page-subtitle">Создание профессионального отчета для планирования полетов БВС</p>
+        </div>
+
+        <div class="report-generator">
+            <!-- Шаг 1: Выбор параметров -->
+            <div class="generator-step active" id="step1">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <h2>Выбор параметров отчета</h2>
+                </div>
+                
+                <div class="step-content">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="reportRoute">Маршрут <span class="required">*</span></label>
+                            <select id="reportRoute" class="form-control" required>
+                                <option value="">Выберите маршрут</option>
+                            </select>
+                            <div class="form-hint">Выберите маршрут для анализа</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="reportDate">Дата анализа <span class="required">*</span></label>
+                            <input type="date" id="reportDate" class="form-control" required>
+                            <div class="form-hint">Дата проведения метеоанализа</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="pilotName">ФИО пилота</label>
+                            <input type="text" id="pilotName" class="form-control" placeholder="Иванов И.И.">
+                            <div class="form-hint">Будет указано в отчете</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="organization">Организация</label>
+                            <input type="text" id="organization" class="form-control" placeholder="ООО 'Авиакомпания'">
+                            <div class="form-hint">Наименование организации</div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-actions">
+                        <button class="btn-secondary" disabled>
+                            <i class="fas fa-arrow-left"></i> Назад
+                        </button>
+                        <button class="btn-primary" id="nextToStep2">
+                            <i class="fas fa-arrow-right"></i> Далее
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Шаг 2: Настройка содержимого -->
+            <div class="generator-step" id="step2">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <h2>Настройка содержимого отчета</h2>
+                </div>
+                
+                <div class="step-content">
+                    <div class="content-sections">
+                        <div class="section-group">
+                            <h3><i class="fas fa-map-marked-alt"></i> Картографические данные</h3>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="includeMap" checked>
+                                <span>Карта с маршрутом и полигоном</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="includeLayers" checked>
+                                <span>Слои метеоданных на карте</span>
+                            </label>
+                        </div>
+                        
+                        <div class="section-group">
+                            <h3><i class="fas fa-chart-line"></i> Графики и диаграммы</h3>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="includeWindChart" checked>
+                                <span>Ветровой профиль</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="includeTempChart" checked>
+                                <span>Температура и точка росы</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="includeVisibilityChart" checked>
+                                <span>Видимость и облачность</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="includePrecipChart" checked>
+                                <span>Осадки и риск обледенения</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="includeSafetyChart" checked>
+                                <span>Окно безопасности полета</span>
+                            </label>
+                        </div>
+                        
+                        <div class="section-group">
+                            <h3><i class="fas fa-table"></i> Табличные данные</h3>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="includeHourlyTable" checked>
+                                <span>Почасовой прогноз</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="includeCriticalPoints" checked>
+                                <span>Критические точки маршрута</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="includeSummaryTable" checked>
+                                <span>Сводная таблица параметров</span>
+                            </label>
+                        </div>
+                        
+                        <div class="section-group">
+                            <h3><i class="fas fa-file-alt"></i> Текстовые разделы</h3>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="includeConclusion" checked>
+                                <span>Ключевые выводы</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="includeRecommendations" checked>
+                                <span>Рекомендации по полету</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="includeWarnings" checked>
+                                <span>Предупреждения и ограничения</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="includeSignature" checked>
+                                <span>Блок подписи пилота</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="step-actions">
+                        <button class="btn-secondary" id="backToStep1">
+                            <i class="fas fa-arrow-left"></i> Назад
+                        </button>
+                        <button class="btn-primary" id="nextToStep3">
+                            <i class="fas fa-arrow-right"></i> Далее
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Шаг 3: Предпросмотр и генерация -->
+            <div class="generator-step" id="step3">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <h2>Предпросмотр и генерация отчета</h2>
+                </div>
+                
+                <div class="step-content">
+                    <div class="preview-container">
+                        <div class="preview-header">
+                            <h3>Предпросмотр отчета</h3>
+                            <button class="btn-outline" id="togglePreview">
+                                <i class="fas fa-expand"></i> Полноэкранный режим
+                            </button>
+                        </div>
+                        
+                        <div class="preview-content" id="reportPreview">
+                            <div class="preview-placeholder">
+                                <i class="fas fa-file-pdf fa-3x"></i>
+                                <p>Предпросмотр отчета появится после настройки параметров</p>
+                                <button class="btn-primary" id="generatePreview">Сгенерировать предпросмотр</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="generation-options">
+                        <div class="option-group">
+                            <h4><i class="fas fa-cog"></i> Настройки генерации</h4>
+                            <label class="radio-item">
+                                <input type="radio" name="format" value="a4" checked>
+                                <span>Формат A4 (вертикальный)</span>
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="format" value="a4-landscape">
+                                <span>Формат A4 (альбомный)</span>
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="format" value="a3">
+                                <span>Формат A3 (для больших карт)</span>
+                            </label>
+                        </div>
+                        
+                        <div class="option-group">
+                            <h4><i class="fas fa-palette"></i> Оформление</h4>
+                            <label class="radio-item">
+                                <input type="radio" name="theme" value="professional" checked>
+                                <span>Профессиональный (цветной)</span>
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="theme" value="print">
+                                <span>Для печати (экономия чернил)</span>
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="theme" value="high-contrast">
+                                <span>Высокая контрастность</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="step-actions">
+                        <button class="btn-secondary" id="backToStep2">
+                            <i class="fas fa-arrow-left"></i> Назад
+                        </button>
+                        <div class="generation-buttons">
+                            <button class="btn-outline" id="downloadDocx">
+                                <i class="fas fa-file-word"></i> Скачать .docx
+                            </button>
+                            <button class="btn-success" id="downloadPdf">
+                                <i class="fas fa-file-pdf"></i> Скачать .pdf
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Прогресс генерации -->
+        <div class="progress-modal" id="progressModal">
+            <div class="progress-content">
+                <div class="progress-icon">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <h3>Генерация отчета</h3>
+                <p id="progressStatus">Подготовка данных...</p>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="generationProgress"></div>
+                </div>
+                
+                <div class="progress-details">
+                    <div class="detail-item">
+                        <i class="fas fa-cloud-download-alt"></i>
+                        <span>Загрузка метеоданных</span>
+                        <span class="status" id="dataStatus">В ожидании...</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-map"></i>
+                        <span>Формирование карты</span>
+                        <span class="status" id="mapStatus">В ожидании...</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Генерация графиков</span>
+                        <span class="status" id="chartsStatus">В ожидании...</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Сборка PDF документа</span>
+                        <span class="status" id="pdfStatus">В ожидании...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключение ВНЕШНИХ БИБЛИОТЕК ЧЕРЕЗ CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/ol@7.4.0/dist/ol.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Подключение ЛОКАЛЬНЫХ СКРИПТОВ -->
+    <script src="js/utils/constants.js"></script>
+    <script src="js/utils/formatters.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/core/app.js"></script>
+    <script src="js/core/router.js"></script>
+    <script src="js/core/data-manager.js"></script>
+    <script src="js/core/pdf-generator.js"></script>
+    <script src="js/map/map-init.js"></script>
+    <script src="js/map/layers.js"></script>
+    <script src="js/map/overlays.js"></script>
+    <script src="js/weather/api-client.js"></script>
+    <script src="js/weather/data-processor.js"></script>
+    <script src="js/weather/hourly-forecast.js"></script>
+    <script src="js/analysis/safety-window.js"></script>
+    <script src="js/analysis/wind-profile.js"></script>
+    <script src="js/analysis/icing-risk.js"></script>
+    <script src="js/analysis/visibility.js"></script>
+    <script src="js/visualization/charts.js"></script>
+    <script src="js/visualization/tables.js"></script>
+    <script src="js/visualization/map-layers.js"></script>
+
+    <!-- Проверка подключения библиотек -->
+    <script>
+        window.addEventListener('load', () => {
+            const checks = {
+                'OpenLayers': typeof ol !== 'undefined',
+                'Chart.js': typeof Chart !== 'undefined',
+                'jsPDF': typeof jspdf !== 'undefined',
+                'html2canvas': typeof html2canvas !== 'undefined'
+            };
+            
+            console.log('✅ Проверка подключения библиотек:');
+            Object.entries(checks).forEach(([lib, status]) => {
+                console.log(`${status ? '🟢' : '🔴'} ${lib}: ${status ? 'ЗАГРУЖЕНА' : 'ОТСУТСТВУЕТ!'}`);
+            });
+            
+            if (Object.values(checks).every(Boolean)) {
+                console.log('🎉 Все библиотеки успешно подключены через CDN!');
+                console.log('🗺️  OpenLayers версия:', ol?.version || 'не определена');
+                console.log('📊 Chart.js версия:', Chart?.version || 'не определена');
+                console.log('📄 jsPDF версия:', jspdf?.version || 'не определена');
+            } else {
+                console.error('❌ Некоторые библиотеки не загружены! Проверьте подключение к интернету.');
+            }
+        });
+    </script>
+</body>
+</html>

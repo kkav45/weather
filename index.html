@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Метеоанализ БВС | Главная</title>
+    
+    <!-- OpenLayers Styles (CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@7.4.0/ol.css">
+    
+    <!-- Font Awesome (CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+  
+    
+    <!-- Основные стили приложения -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/print.css">
+    
+    <style>
+        /* Стили для компактных уведомлений и закругленных кнопок */
+        /* ... (как в предыдущем ответе) ... */
+        
+        /* Стили для календаря в стиле Telegram */
+        .calendar-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 3px solid #0088cc;
+        }
+        
+        .calendar-container .section-title {
+            margin-bottom: 10px;
+            color: #1a365d;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .date-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            color: #2c3e50;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .date-select:focus {
+            border-color: #0088cc;
+            box-shadow: 0 0 0 3px rgba(0, 136, 204, 0.2);
+            outline: none;
+        }
+        
+        /* Стили для выбора полигона и маршрута */
+        .route-selector-container {
+            margin-top: 15px;
+        }
+        
+        .selector-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 15px;
+        }
+        
+        .polygon-route-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            background: white;
+            margin-top: 5px;
+        }
+        
+        /* Стиль для подсветки дат с данными в календаре */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.5);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-cloud-sun"></i>
+                <span>Метеоанализ БВС</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">Главная</a></li>
+                <li><a href="charts.html">Графики</a></li>
+                <li><a href="tables.html">Таблицы</a></li>
+                <li><a href="report.html">Отчет</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="btn-icon" id="settingsBtn" title="Настройки">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="btn-primary nav-btn" id="analyzeBtn">
+                    <i class="fas fa-chart-line"></i> Анализ
+                </button>
+                <button class="btn-primary nav-btn" id="exportBtn">
+                    <i class="fas fa-file-export"></i> Экспорт
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <div class="main-container">
+        <!-- Карта -->
+        <div class="map-container" id="mapContainer">
+            <div id="map"></div>
+            
+            <!-- Панель управления слоями -->
+            <div class="map-layers-panel">
+                <div class="panel-header">
+                    <i class="fas fa-layer-group"></i> Слои карты
+                </div>
+                <div class="layers-list">
+                    <label class="layer-item">
+                        <input type="checkbox" data-layer="wind-profile" checked>
+                        <span>Ветровой профиль</span>
+                    </label>
+                    <label class="layer-item">
+                        <input type="checkbox" data-layer="visibility">
+                        <span>Видимость</span>
+                    </label>
+                    <label class="layer-item">
+                        <input type="checkbox" data-layer="icing-risk">
+                        <span>Риск обледенения</span>
+                    </label>
+                    <label class="layer-item">
+                        <input type="checkbox" data-layer="precipitation">
+                        <span>Осадки</span>
+                    </label>
+                    <label class="layer-item">
+                        <input type="checkbox" data-layer="thunderstorm">
+                        <span>Грозовая активность</span>
+                    </label>
+                    <label class="layer-item">
+                        <input type="checkbox" data-layer="temperature">
+                        <span>Температура</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Левая боковая панель (управление) -->
+        <div class="sidebar left-sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-sliders-h"></i> Управление</h2>
+                <button class="sidebar-close" id="closeLeftSidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-content">
+                <!-- Календарь для выбора даты -->
+                <div class="control-section calendar-container">
+                    <div class="section-title">
+                        <i class="fas fa-calendar-alt"></i> Выбор даты
+                    </div>
+                    <p style="font-size: 13px; color: #4a5568; margin-bottom: 10px; line-height: 1.5;">
+                        <strong>💡 Совет:</strong> Даты с сохраненными метеоданными доступны для выбора. Выберите дату для загрузки данных.
+                    </p>
+                    <input type="date" id="analysisDate" class="date-select">
+                </div>
+                
+                <!-- Выбор полигона и маршрута -->
+                <div class="control-section route-selector-container">
+                    <div class="section-title">
+                        <i class="fas fa-route"></i> Выбор объектов
+                    </div>
+                    <label class="selector-label" for="polygonSelect">Полигон:</label>
+                    <select id="polygonSelect" class="polygon-route-select">
+                        <option value="">Выберите дату с данными</option>
+                    </select>
+                    
+                    <label class="selector-label" for="routeSelect" style="margin-top: 15px;">Маршрут:</label>
+                    <select id="routeSelect" class="polygon-route-select">
+                        <option value="">Выберите полигон</option>
+                    </select>
+                </div>
+                
+                <!-- Полигоны -->
+                <div class="control-section">
+                    <div class="section-title">
+                        <i class="fas fa-draw-polygon"></i> Полигоны
+                    </div>
+                    <div id="polygonsList">
+                        <p style="text-align: center; color: #6c757d; padding: 20px; font-size: 14px;">
+                            <i class="fas fa-info-circle"></i><br>Нет полигонов<br>
+                            <span style="font-size: 13px; display: block; margin-top: 8px;">
+                                Нарисуйте полигон или выберите дату с данными
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Маршруты -->
+                <div class="control-section">
+                    <div class="section-title">
+                        <i class="fas fa-route"></i> Маршруты
+                    </div>
+                    <div id="routesList">
+                        <p style="text-align: center; color: #6c757d; padding: 20px; font-size: 14px;">
+                            <i class="fas fa-info-circle"></i><br>Нет маршрутов<br>
+                            <span style="font-size: 13px; display: block; margin-top: 8px;">
+                                Нарисуйте маршрут или выберите дату с данными
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Рисование -->
+                <div class="control-section">
+                    <div class="section-title">
+                        <i class="fas fa-pencil-alt"></i> Рисование
+                    </div>
+                    <button class="drawing-btn polygon" id="drawPolygonBtn">
+                        <i class="fas fa-draw-polygon"></i> Нарисовать полигон
+                    </button>
+                    <button class="drawing-btn route" id="drawRouteBtn">
+                        <i class="fas fa-route"></i> Нарисовать маршрут
+                    </button>
+                    <button class="drawing-btn clear" id="clearDrawingBtn" disabled>
+                        <i class="fas fa-trash"></i> Очистить рисунки
+                    </button>
+                    <div class="drawing-status" id="drawingStatus">
+                        Выберите инструмент рисования
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Правая боковая панель (анализ) -->
+        <div class="sidebar right-sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-chart-line"></i> Анализ маршрутов</h2>
+                <button class="sidebar-close" id="closeRightSidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-content">
+                <!-- Статус полета с иконкой погоды -->
+                <div class="analysis-card flight-status-card" id="flightStatusCard">
+                    <div class="status-indicator" id="statusIndicator">
+                        <div class="status-icon" id="statusIcon">
+                            <i class="wi wi-day-sunny" style="font-size: 48px;"></i>
+                        </div>
+                        <div class="status-text">
+                            <div class="status-title" id="statusTitle">Статус не определен</div>
+                            <div class="status-subtitle" id="statusSubtitle">Выберите дату и маршрут для анализа</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Ключевые параметры с иконками -->
+                <div class="analysis-card">
+                    <div class="section-title">
+                        <i class="fas fa-tachometer-alt"></i> Ключевые параметры
+                    </div>
+                    <div class="key-parameters-grid">
+                        <div class="parameter-card safe">
+                            <div class="param-icon"><i class="wi wi-strong-wind"></i></div>
+                            <div class="param-label">Ветер</div>
+                            <div class="param-value" id="windParam">-</div>
+                            <div class="param-unit">м/с</div>
+                        </div>
+                        <div class="parameter-card safe">
+                            <div class="param-icon"><i class="wi wi-day-haze"></i></div>
+                            <div class="param-label">Видимость</div>
+                            <div class="param-value" id="visibilityParam">-</div>
+                            <div class="param-unit">км</div>
+                        </div>
+                        <div class="parameter-card safe">
+                            <div class="param-icon"><i class="wi wi-rain"></i></div>
+                            <div class="param-label">Осадки</div>
+                            <div class="param-value" id="precipitationParam">-</div>
+                            <div class="param-unit">мм</div>
+                        </div>
+                        <div class="parameter-card safe">
+                            <div class="param-icon"><i class="wi wi-day-sunny"></i></div>
+                            <div class="param-label">Температура</div>
+                            <div class="param-value" id="tempParam">-</div>
+                            <div class="param-unit">°C</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Рекомендации с иконками -->
+                <div class="analysis-card">
+                    <div class="section-title">
+                        <i class="fas fa-lightbulb"></i> Рекомендации
+                    </div>
+                    <div class="recommendations-list" id="recommendationsList">
+                        <div class="recommendation-item info">
+                            <div class="rec-icon"><i class="wi wi-info-circle"></i></div>
+                            <div class="rec-content">
+                                <div class="rec-title">Информация</div>
+                                <div class="rec-text">Выберите дату и маршрут для получения рекомендаций</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Кнопки действий -->
+                <div class="analysis-card actions-card">
+                    <button class="btn-primary btn-block" id="viewTablesBtn">
+                        <i class="fas fa-table"></i> Перейти к таблицам
+                    </button>
+                    <button class="btn-outline btn-block" id="viewChartsBtn">
+                        <i class="fas fa-chart-line"></i> Перейти к графикам
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Индикатор загрузки -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Загрузка данных...</div>
+    </div>
+    
+    <!-- Уведомление -->
+    <div class="notification" id="notification">
+        <div class="notification-icon info">
+            <i class="fas fa-info"></i>
+        </div>
+        <div class="notification-content">
+            <div class="notification-title">Заголовок</div>
+            <div class="notification-message">Сообщение</div>
+        </div>
+    </div>
+
+    <!-- Overlay для закрытия боковых панелей -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Подключение библиотек -->
+    <script src="https://cdn.jsdelivr.net/npm/ol@7.4.0/dist/ol.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Подключение локальных скриптов -->
+    <script src="js/utils/constants.js"></script>
+    <script src="js/utils/formatters.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/core/app.js"></script>
+    <script src="js/core/router.js"></script>
+    <script src="js/core/data-manager.js"></script>
+    <script src="js/core/pdf-generator.js"></script>
+    <script src="js/map/map-init.js"></script>
+    <script src="js/map/layers.js"></script>
+    <script src="js/map/overlays.js"></script>
+    <script src="js/weather/api-client.js"></script>
+    <script src="js/weather/data-processor.js"></script>
+    <script src="js/weather/hourly-forecast.js"></script>
+    <script src="js/analysis/safety-window.js"></script>
+    <script src="js/analysis/wind-profile.js"></script>
+    <script src="js/analysis/icing-risk.js"></script>
+    <script src="js/analysis/visibility.js"></script>
+    <script src="js/visualization/charts.js"></script>
+    <script src="js/visualization/tables.js"></script>
+    <script src="js/visualization/map-layers.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Установка даты по умолчанию (завтра)
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('analysisDate').valueAsDate = tomorrow;
+            
+            // Если база данных уже инициализирована и содержит данные
+            if (window.meteoApp && window.meteoApp.state.databaseInitialized) {
+                const dates = window.meteoApp.getDatesWithData();
+                if (dates.length > 0) {
+                    // Выбираем последнюю доступную дату
+                    const lastDate = dates[dates.length - 1];
+                    document.getElementById('analysisDate').value = lastDate;
+                    
+                    // Загружаем данные за эту дату
+                    const weatherData = window.meteoApp.getWeatherDataByDate(lastDate);
+                    if (weatherData) {
+                        window.meteoApp.updateInterfaceWithDate(lastDate, weatherData);
+                    }
+                }
+            }
+        });
+    </script>
+    
+    <!-- Стили для закругленных кнопок -->
+    <style>
+        .nav-actions .nav-btn {
+            border-radius: 24px !important;
+            padding: 8px 20px !important;
+            font-weight: 500 !important;
+            min-width: 110px;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            box-shadow: 0 2px 8px rgba(0, 136, 204, 0.3) !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .nav-actions .nav-btn:hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(0, 136, 204, 0.4) !important;
+        }
+        
+        .nav-actions .nav-btn:active {
+            transform: translateY(0) !important;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-actions .nav-btn {
+                min-width: 90px !important;
+                padding: 6px 16px !important;
+                font-size: 14px !important;
+            }
+        }
+    </style>
+</body>
+</html>

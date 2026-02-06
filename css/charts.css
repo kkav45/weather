@@ -1,0 +1,246 @@
+/* Стили для страницы графиков */
+
+.charts-container {
+    margin-top: var(--nav-height);
+    padding: 24px;
+    max-width: 1800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.page-header h1 {
+    font-size: 1.8rem;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.route-selector {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.route-selector label {
+    font-weight: 500;
+    color: #555;
+    margin-right: 8px;
+}
+
+.route-selector .form-control {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+    gap: 24px;
+}
+
+.chart-card {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.chart-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.chart-card.full-width {
+    grid-column: 1 / -1;
+}
+
+.card-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header h3 {
+    font-size: 1.3rem;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chart-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-sm:hover {
+    background: #f8f9fa;
+    border-color: #ccc;
+    transform: translateY(-1px);
+}
+
+.btn-sm.btn-outline {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-sm.btn-outline:hover {
+    background: rgba(0, 136, 204, 0.05);
+    border-color: var(--primary-dark);
+}
+
+.card-body {
+    padding: 20px;
+    position: relative;
+}
+
+.card-body canvas {
+    width: 100%;
+    height: 300px;
+}
+
+.card-footer {
+    padding: 16px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.5;
+}
+
+.chart-legend {
+    margin-top: 16px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+/* Модальное окно для полноэкранного просмотра */
+.modal.fullscreen .modal-content {
+    width: 95%;
+    max-width: 1200px;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal.fullscreen .modal-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.modal.fullscreen canvas {
+    width: 100%;
+    height: 100%;
+    max-height: 80vh;
+}
+
+.modal.fullscreen .modal-footer {
+    padding: 16px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .charts-container {
+        padding: 16px;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .route-selector {
+        flex-wrap: wrap;
+    }
+    
+    .card-body canvas {
+        height: 250px;
+    }
+}
+
+/* Стили для легенд графиков */
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 20px;
+    margin-bottom: 8px;
+}
+
+.legend-color {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    margin-right: 8px;
+}
+
+.legend-label {
+    font-size: 0.85rem;
+    color: #555;
+}
+
+/* Стили для статусных индикаторов */
+.status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.status-safe {
+    background: var(--status-excellent);
+}
+
+.status-warning {
+    background: var(--status-warning);
+}
+
+.status-danger {
+    background: var(--status-danger);
+}

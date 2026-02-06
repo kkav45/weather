@@ -1,0 +1,593 @@
+/* Стили для страницы таблиц */
+
+.tables-container {
+    margin-top: var(--nav-height);
+    padding: 24px 40px;
+    max-width: 1800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tables-tabs {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    margin-top: 24px;
+}
+
+.tab-header {
+    display: flex;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    overflow-x: auto;
+    padding: 0 16px;
+}
+
+.tab-btn {
+    padding: 16px 24px;
+    background: none;
+    border: none;
+    color: #666;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    color: var(--primary);
+    background: rgba(0, 136, 204, 0.05);
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+    background: rgba(0, 136, 204, 0.1);
+    font-weight: 600;
+}
+
+.tab-content {
+    display: none;
+    padding: 24px;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.table-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.table-title h3 {
+    font-size: 1.5rem;
+    color: var(--dark);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.table-title p {
+    color: #666;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.table-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-sm:hover {
+    background: #f8f9fa;
+    border-color: #ccc;
+    transform: translateY(-1px);
+}
+
+.btn-sm.btn-outline {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-sm.btn-outline:hover {
+    background: rgba(0, 136, 204, 0.05);
+    border-color: var(--primary-dark);
+}
+
+.table-search {
+    position: relative;
+}
+
+.table-search .form-control-sm {
+    padding: 6px 32px 6px 12px;
+    font-size: 0.85rem;
+    width: 200px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.table-search .search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 0.9rem;
+}
+
+.table-container {
+    overflow-x: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1200px;
+}
+
+.data-table th {
+    background: linear-gradient(135deg, var(--primary) 0%, #00aaff 100%);
+    color: white;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.data-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.data-table tr:hover td {
+    background: #f8f9fa;
+}
+
+.data-table tr:nth-child(even) td {
+    background: #fcfcfc;
+}
+
+.data-table tr:nth-child(even):hover td {
+    background: #f8f9fa;
+}
+
+/* Статусные цвета */
+.status-safe {
+    color: var(--status-excellent);
+    font-weight: 600;
+}
+
+.status-warning {
+    color: var(--status-warning);
+    font-weight: 600;
+}
+
+.status-danger {
+    color: var(--status-danger);
+    font-weight: 600;
+}
+
+/* Риск обледенения */
+.risk-low {
+    background: rgba(46, 204, 113, 0.15);
+    color: #16a34a;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.risk-medium {
+    background: rgba(245, 158, 11, 0.15);
+    color: #c2410c;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.risk-high {
+    background: rgba(231, 76, 60, 0.15);
+    color: #b91c1c;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+/* Пагинация */
+.table-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-controls button {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.pagination-controls button:hover {
+    background: #e9ecef;
+    border-color: #ccc;
+}
+
+.pagination-controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-page {
+    min-width: 24px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* Сводная таблица */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-top: 4px solid #3498db;
+    position: relative;
+    overflow: hidden;
+}
+
+.summary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3498db 0%, #2ecc71 100%);
+}
+
+.summary-card.warning::before {
+    background: linear-gradient(90deg, #f39c12 0%, #e67e22 100%);
+}
+
+.summary-card.danger::before {
+    background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.summary-card.safe::before {
+    background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    color: #3498db;
+    margin-bottom: 16px;
+}
+
+.summary-card.warning .card-icon {
+    color: #f39c12;
+}
+
+.summary-card.danger .card-icon {
+    color: #e74c3c;
+}
+
+.summary-card.safe .card-icon {
+    color: #27ae60;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    color: var(--dark);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.card-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin: 8px 0;
+}
+
+.card-subtitle {
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.summary-details {
+    background: #f8f9fa;
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 24px;
+}
+
+.summary-details h4 {
+    font-size: 1.3rem;
+    color: var(--dark);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.safety-assessment {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.assessment-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: white;
+    border-radius: 12px;
+    border-left: 3px solid var(--primary);
+}
+
+.assessment-label {
+    color: #666;
+    font-weight: 500;
+}
+
+.assessment-value {
+    color: var(--dark);
+    font-weight: 600;
+}
+
+.assessment-value.status-warning {
+    color: var(--status-warning);
+}
+
+.assessment-value.status-danger {
+    color: var(--status-danger);
+}
+
+.critical-periods {
+    background: rgba(245, 158, 11, 0.15);
+    color: #c2410c;
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: inline-block;
+    font-weight: 500;
+}
+
+/* Модальное окно экспорта */
+.export-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.export-option {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 16px;
+    padding: 24px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.export-option:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary);
+    box-shadow: 0 8px 20px rgba(0, 136, 204, 0.15);
+}
+
+.export-option.active {
+    background: rgba(0, 136, 204, 0.08);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 136, 204, 0.2);
+}
+
+.export-option i {
+    color: var(--primary);
+    margin-bottom: 12px;
+}
+
+.export-option[data-format="xls"] i {
+    color: #217346;
+}
+
+.export-option[data-format="json"] i {
+    color: #f39c12;
+}
+
+.export-option[data-format="pdf"] i {
+    color: #e74c3c;
+}
+
+.option-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--dark);
+    margin-bottom: 6px;
+}
+
+.option-desc {
+    font-size: 0.85rem;
+    color: #777;
+}
+
+.export-settings {
+    background: #f8f9fa;
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 16px;
+}
+
+.export-settings h4 {
+    font-size: 1.2rem;
+    color: var(--dark);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.export-settings .checkbox-item {
+    margin-bottom: 12px;
+}
+
+.export-settings .form-group {
+    margin-top: 16px;
+}
+
+.export-settings .form-control {
+    padding: 10px 16px;
+    font-size: 1rem;
+}
+
+/* Кнопки экспорта в навигации */
+.export-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.export-buttons .btn-outline {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.export-buttons .btn-outline i {
+    font-size: 1.1rem;
+}
+
+.export-buttons .btn-outline:hover i {
+    transform: scale(1.1);
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .tables-container {
+        padding: 16px 24px;
+    }
+    
+    .summary-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+}
+
+@media (max-width: 992px) {
+    .table-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .table-controls {
+        justify-content: flex-start;
+    }
+    
+    .table-search .form-control-sm {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .tab-header {
+        padding: 0 8px;
+    }
+    
+    .tab-btn {
+        padding: 14px 16px;
+        font-size: 0.85rem;
+    }
+    
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .safety-assessment {
+        grid-template-columns: 1fr;
+    }
+    
+    .data-table {
+        min-width: 900px;
+    }
+    
+    .export-options {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+}

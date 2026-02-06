@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Метеоанализ БВС | Графики</title>
+    
+    <!-- OpenLayers Styles (CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@7.4.0/ol.css">
+    
+    <!-- Font Awesome (CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+
+    
+    <!-- Chart.js Styles -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css">
+    
+    <!-- Основные стили приложения -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/charts.css">
+    <link rel="stylesheet" href="css/print.css">
+    
+    <style>
+        /* Специфичные стили для страницы графиков */
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .page-header h1 i {
+            font-size: 36px;
+        }
+        
+        .route-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+        
+        .calendar-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            min-width: 250px;
+        }
+        
+        .calendar-container .selector-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .date-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #2c3e50;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .date-select:focus {
+            border-color: white;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+            outline: none;
+        }
+        
+        .route-selector-container {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .route-selector-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .polygon-route-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #2c3e50;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .polygon-route-select:focus {
+            border-color: white;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+            outline: none;
+        }
+        
+        .tabs-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .tabs-header {
+            display: flex;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0;
+            border-bottom: 3px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 18px 15px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tab-btn i {
+            font-size: 20px;
+        }
+        
+        .tab-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .tab-btn.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: white;
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 25px;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-top: 15px;
+        }
+        
+        .chart-container canvas {
+            max-width: 100%;
+            height: 400px !important;
+        }
+        
+        .chart-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chart-description {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .no-data-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+            font-size: 18px;
+        }
+        
+        .no-data-message i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        
+        .empty-state-icon {
+            font-size: 80px;
+            margin-bottom: 25px;
+            opacity: 0.2;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .mini-chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .mini-chart-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .mini-chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .mini-chart-container {
+            height: 200px;
+            position: relative;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .route-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .calendar-container,
+            .route-selector-container {
+                min-width: 100%;
+            }
+            
+            .tabs-header {
+                flex-wrap: wrap;
+            }
+            
+            .tab-btn {
+                min-width: 120px;
+                font-size: 14px;
+                padding: 12px 8px;
+            }
+            
+            .tab-btn i {
+                font-size: 16px;
+            }
+            
+            .page-header {
+                padding: 20px;
+            }
+            
+            .page-header h1 {
+                font-size: 24px;
+            }
+            
+            .page-header h1 i {
+                font-size: 28px;
+            }
+            
+            .chart-container canvas {
+                height: 300px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-cloud-sun"></i>
+                <span>Метеоанализ БВС</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="charts.html" class="active">Графики</a></li>
+                <li><a href="tables.html">Таблицы</a></li>
+                <li><a href="report.html">Отчет</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="btn-icon" id="settingsBtn" title="Настройки">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="charts-container">
+        <!-- Заголовок страницы -->
+        <div class="page-header">
+            <h1><i class="fas fa-chart-line"></i> Графики метеоанализа</h1>
+            <div class="route-controls">
+                <div class="calendar-container">
+                    <label class="selector-label" for="dateSelectCharts">
+                        <i class="fas fa-calendar-alt"></i> Дата анализа:
+                    </label>
+                    <input type="date" id="dateSelectCharts" class="date-select">
+                </div>
+                <div class="route-selector-container">
+                    <label class="route-selector-label" for="polygonSelectCharts">
+                        <i class="fas fa-draw-polygon"></i> Полигон:
+                    </label>
+                    <select id="polygonSelectCharts" class="polygon-route-select">
+                        <option value="">Выберите дату с данными</option>
+                    </select>
+                    
+                    <label class="route-selector-label" for="routeSelectCharts" style="margin-top: 15px;">
+                        <i class="fas fa-route"></i> Маршрут:
+                    </label>
+                    <select id="routeSelectCharts" class="polygon-route-select">
+                        <option value="">Выберите полигон</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Вкладки с графиками -->
+        <div class="tabs-container">
+            <div class="tabs-header">
+                <button class="tab-btn active" data-tab="temperature">
+                    <i class="wi wi-thermometer"></i>
+                    <span>Температура</span>
+                </button>
+                <button class="tab-btn" data-tab="wind">
+                    <i class="wi wi-strong-wind"></i>
+                    <span>Ветер</span>
+                </button>
+                <button class="tab-btn" data-tab="humidity">
+                    <i class="wi wi-humidity"></i>
+                    <span>Влажность</span>
+                </button>
+                <button class="tab-btn" data-tab="pressure">
+                    <i class="wi wi-barometer"></i>
+                    <span>Давление</span>
+                </button>
+                <button class="tab-btn" data-tab="visibility">
+                    <i class="wi wi-day-haze"></i>
+                    <span>Видимость</span>
+                </button>
+            </div>
+            
+            <!-- График температуры -->
+            <div class="tab-content active" id="tab-temperature">
+                <h2 class="chart-title"><i class="wi wi-thermometer"></i> Температурный профиль</h2>
+                <p class="chart-description">Изменение температуры в течение суток</p>
+                <div class="chart-container">
+                    <canvas id="temperatureChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- График ветра -->
+            <div class="tab-content" id="tab-wind">
+                <h2 class="chart-title"><i class="wi wi-strong-wind"></i> Ветровой профиль</h2>
+                <p class="chart-description">Скорость и направление ветра в течение суток</p>
+                <div class="chart-container">
+                    <canvas id="windChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- График влажности -->
+            <div class="tab-content" id="tab-humidity">
+                <h2 class="chart-title"><i class="wi wi-humidity"></i> Относительная влажность</h2>
+                <p class="chart-description">Изменение влажности воздуха в течение суток</p>
+                <div class="chart-container">
+                    <canvas id="humidityChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- График давления -->
+            <div class="tab-content" id="tab-pressure">
+                <h2 class="chart-title"><i class="wi wi-barometer"></i> Атмосферное давление</h2>
+                <p class="chart-description">Изменение давления в течение суток</p>
+                <div class="chart-container">
+                    <canvas id="pressureChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- График видимости -->
+            <div class="tab-content" id="tab-visibility">
+                <h2 class="chart-title"><i class="wi wi-day-haze"></i> Видимость</h2>
+                <p class="chart-description">Прогноз видимости в течение суток</p>
+                <div class="chart-container">
+                    <canvas id="visibilityChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Мини-графики для быстрого просмотра -->
+        <div class="page-header" style="margin-top: 20px; padding: 20px;">
+            <h2 style="font-size: 24px; margin-bottom: 15px;"><i class="fas fa-th-large"></i> Быстрый обзор</h2>
+            <p style="font-size: 16px; opacity: 0.9; margin-bottom: 0;">Ключевые параметры в одном месте</p>
+        </div>
+        
+        <div class="chart-grid">
+            <div class="mini-chart-card">
+                <div class="mini-chart-title">
+                    <i class="wi wi-thermometer"></i>
+                    <span>Температура</span>
+                </div>
+                <div class="mini-chart-container">
+                    <canvas id="miniTempChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="mini-chart-card">
+                <div class="mini-chart-title">
+                    <i class="wi wi-strong-wind"></i>
+                    <span>Скорость ветра</span>
+                </div>
+                <div class="mini-chart-container">
+                    <canvas id="miniWindChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="mini-chart-card">
+                <div class="mini-chart-title">
+                    <i class="wi wi-humidity"></i>
+                    <span>Влажность</span>
+                </div>
+                <div class="mini-chart-container">
+                    <canvas id="miniHumidityChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="mini-chart-card">
+                <div class="mini-chart-title">
+                    <i class="wi wi-day-haze"></i>
+                    <span>Видимость</span>
+                </div>
+                <div class="mini-chart-container">
+                    <canvas id="miniVisibilityChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Индикатор загрузки -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Загрузка данных...</div>
+    </div>
+    
+    <!-- Уведомление -->
+    <div class="notification" id="notification">
+        <div class="notification-icon info">
+            <i class="fas fa-info"></i>
+        </div>
+        <div class="notification-content">
+            <div class="notification-title">Заголовок</div>
+            <div class="notification-message">Сообщение</div>
+        </div>
+    </div>
+
+    <!-- Overlay для закрытия модальных окон -->
+    <div class="sidebar-overlay" id="modalOverlay"></div>
+
+    <!-- Подключение библиотек -->
+    <script src="https://cdn.jsdelivr.net/npm/ol@7.4.0/dist/ol.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Подключение локальных скриптов -->
+    <script src="js/utils/constants.js"></script>
+    <script src="js/utils/formatters.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/core/app.js"></script>
+    <script src="js/core/router.js"></script>
+    <script src="js/core/data-manager.js"></script>
+    <script src="js/core/pdf-generator.js"></script>
+    <script src="js/visualization/charts-manager.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация менеджера графиков
+            if (typeof ChartsManager !== 'undefined') {
+                window.chartsManager = new ChartsManager();
+            }
+            
+            // Установка текущей даты
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('dateSelectCharts').valueAsDate = tomorrow;
+            
+            // Если база данных уже инициализирована и содержит данные
+            if (window.meteoApp && window.meteoApp.state.databaseInitialized) {
+                const dates = window.meteoApp.getDatesWithData();
+                if (dates.length > 0) {
+                    // Выбираем последнюю доступную дату
+                    const lastDate = dates[dates.length - 1];
+                    document.getElementById('dateSelectCharts').value = lastDate;
+                    
+                    // Загружаем данные за эту дату
+                    const weatherData = window.meteoApp.getWeatherDataByDate(lastDate);
+                    if (weatherData && window.chartsManager) {
+                        window.chartsManager.updateData(weatherData);
+                    }
+                }
+            }
+        });
+    </script>
+    
+    <!-- Стили для закругленных кнопок навигации -->
+    <style>
+        .nav-actions .btn-icon {
+            border-radius: 50% !important;
+            width: 40px !important;
+            height: 40px !important;
+            min-width: 40px !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+    </style>
+</body>
+</html>

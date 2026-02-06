@@ -1,0 +1,1116 @@
+/* Стили для печати и экспорта в PDF */
+
+@media print {
+    /* Скрыть элементы интерфейса, не нужные в печатной версии */
+    .main-nav,
+    .sidebar,
+    .map-container,
+    .nav-actions,
+    .btn,
+    .btn-icon,
+    .action-btn,
+    .sidebar-close,
+    .modal,
+    .loading-overlay,
+    .notification,
+    .drawing-instructions,
+    .map-layers-panel,
+    .export-buttons,
+    .table-controls,
+    .pagination-container,
+    .chart-controls,
+    .fullscreen-modal,
+    .tab-header,
+    .step-actions,
+    .progress-modal,
+    .date-display,
+    .api-status,
+    .api-source,
+    .window-status,
+    .weather-section,
+    .hourly-forecast,
+    .metric-badge,
+    .location-info,
+    .thermal-warning,
+    .safety-window,
+    .recommendation-item,
+    .route-rating,
+    .route-header,
+    .analysis-section-title,
+    .section-subtitle,
+    .parameter-row,
+    .chart-legend,
+    .legend-item,
+    .legend-color,
+    .legend-label,
+    .status-indicator,
+    .status-safe,
+    .status-warning,
+    .status-danger,
+    .weather-warning,
+    .weather-danger,
+    .hour-item,
+    .hour-time,
+    .hour-value,
+    .hour-danger,
+    .hour-warning,
+    .hour-safe,
+    .form-group,
+    .form-control,
+    .checkbox-item,
+    .radio-item,
+    .route-selector,
+    .page-subtitle,
+    .generator-step,
+    .step-header,
+    .step-number,
+    .step-content,
+    .content-sections,
+    .section-group,
+    .generation-options,
+    .option-group,
+    .preview-container,
+    .preview-header,
+    .preview-content,
+    .preview-placeholder,
+    .progress-modal,
+    .progress-content,
+    .progress-icon,
+    .progress-details,
+    .detail-item,
+    .status,
+    .export-options,
+    .export-option,
+    .export-settings,
+    .modal-header,
+    .modal-footer,
+    .modal-close,
+    .map-legend,
+    .map-info-panel,
+    .info-panel-header,
+    .info-panel-content,
+    .info-panel-footer,
+    .info-item,
+    .info-label,
+    .info-value,
+    .info-panel-close,
+    .legend-toggle,
+    .legend-content,
+    .legend-section,
+    .legend-header {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        width: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Основной контент для печати */
+    body {
+        margin: 0;
+        padding: 0;
+        background: white !important;
+        color: #000 !important;
+        font-family: 'Times New Roman', Times, serif !important;
+        line-height: 1.5 !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+    
+    /* Контейнер отчета */
+    .report-preview,
+    .print-content {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        padding: 20mm !important; /* Стандартные поля для печати */
+        box-sizing: border-box !important;
+        page-break-after: always !important;
+    }
+    
+    /* Заголовки отчета */
+    .report-header {
+        text-align: center !important;
+        margin-bottom: 30px !important;
+        border-bottom: 3px double #000 !important;
+        padding-bottom: 20px !important;
+    }
+    
+    .report-header h1 {
+        font-size: 24pt !important;
+        font-weight: bold !important;
+        margin: 0 0 10px 0 !important;
+        color: #000 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 2px !important;
+    }
+    
+    .report-header h2 {
+        font-size: 18pt !important;
+        font-weight: bold !important;
+        margin: 0 !important;
+        color: #000 !important;
+        text-transform: uppercase !important;
+    }
+    
+    .report-meta {
+        margin-top: 15px !important;
+        text-align: left !important;
+        font-size: 12pt !important;
+    }
+    
+    .meta-item {
+        margin-bottom: 5px !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* Секции отчета */
+    .report-section {
+        margin-bottom: 30px !important;
+        page-break-inside: avoid !important;
+    }
+    
+    .report-section h3 {
+        font-size: 16pt !important;
+        font-weight: bold !important;
+        color: #000 !important;
+        margin-bottom: 15px !important;
+        padding-bottom: 8px !important;
+        border-bottom: 2px solid #000 !important;
+    }
+    
+    /* Сетка погодных данных */
+    .weather-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 15px !important;
+        margin-top: 15px !important;
+    }
+    
+    .weather-item {
+        text-align: center !important;
+        padding: 15px !important;
+        border: 1px solid #000 !important;
+    }
+    
+    .item-icon {
+        font-size: 24pt !important;
+        margin-bottom: 10px !important;
+        color: #000 !important;
+    }
+    
+    .item-value {
+        font-size: 18pt !important;
+        font-weight: bold !important;
+        color: #000 !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .item-label {
+        font-size: 10pt !important;
+        color: #000 !important;
+    }
+    
+    /* Карточка анализа */
+    .analysis-card {
+        border: 2px solid #000 !important;
+        border-radius: 0 !important;
+        padding: 20px !important;
+        margin-top: 15px !important;
+        background: #fff !important;
+        page-break-inside: avoid !important;
+    }
+    
+    .card-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin-bottom: 15px !important;
+        padding-bottom: 10px !important;
+        border-bottom: 1px solid #000 !important;
+    }
+    
+    .status-badge {
+        font-size: 14pt !important;
+        font-weight: bold !important;
+        padding: 8px 20px !important;
+        border-radius: 0 !important;
+        color: #fff !important;
+    }
+    
+    .status-badge.safe {
+        background: #27ae60 !important;
+    }
+    
+    .status-badge.warning {
+        background: #f39c12 !important;
+    }
+    
+    .status-badge.danger {
+        background: #e74c3c !important;
+    }
+    
+    .rating {
+        font-size: 14pt !important;
+        font-weight: bold !important;
+        color: #000 !important;
+    }
+    
+    .card-body {
+        font-size: 11pt !important;
+    }
+    
+    .analysis-row {
+        display: flex !important;
+        justify-content: space-between !important;
+        padding: 8px 0 !important;
+        border-bottom: 1px dashed #ccc !important;
+    }
+    
+    .analysis-row:last-child {
+        border-bottom: none !important;
+    }
+    
+    .row-label {
+        font-weight: bold !important;
+        color: #000 !important;
+        flex: 1 !important;
+    }
+    
+    .row-value {
+        font-weight: normal !important;
+        color: #000 !important;
+        text-align: right !important;
+        flex: 1 !important;
+    }
+    
+    .analysis-row.critical .row-value {
+        color: #e74c3c !important;
+        font-weight: bold !important;
+    }
+    
+    /* Рекомендации и предупреждения */
+    .recommendations-list,
+    .warnings-list {
+        list-style-type: none !important;
+        padding-left: 0 !important;
+        margin-top: 10px !important;
+        font-size: 11pt !important;
+    }
+    
+    .recommendations-list li,
+    .warnings-list li {
+        padding: 8px 0 8px 25px !important;
+        position: relative !important;
+        line-height: 1.5 !important;
+        border-bottom: 1px solid #eee !important;
+    }
+    
+    .recommendations-list li:last-child,
+    .warnings-list li:last-child {
+        border-bottom: none !important;
+    }
+    
+    .recommendations-list li:before {
+        content: "✓" !important;
+        position: absolute !important;
+        left: 0 !important;
+        color: #27ae60 !important;
+        font-weight: bold !important;
+    }
+    
+    .warnings-list li:before {
+        content: "⚠" !important;
+        position: absolute !important;
+        left: 0 !important;
+        color: #e74c3c !important;
+        font-weight: bold !important;
+    }
+    
+    /* Блок подписи */
+    .report-footer {
+        margin-top: 40px !important;
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 30px !important;
+        page-break-inside: avoid !important;
+    }
+    
+    .signature-block {
+        text-align: center !important;
+    }
+    
+    .signature-line {
+        height: 1px !important;
+        background: #000 !important;
+        margin: 30px auto 10px auto !important;
+        width: 80% !important;
+    }
+    
+    .signature-label {
+        font-size: 10pt !important;
+        font-weight: bold !important;
+        margin-bottom: 5px !important;
+        color: #000 !important;
+    }
+    
+    .signature-name,
+    .signature-date {
+        font-size: 11pt !important;
+        font-style: italic !important;
+        color: #000 !important;
+    }
+    
+    /* Таблицы для печати */
+    .data-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        font-size: 9pt !important;
+        page-break-inside: avoid !important;
+    }
+    
+    .data-table th {
+        background: #000 !important;
+        color: #fff !important;
+        padding: 8px 10px !important;
+        text-align: left !important;
+        font-weight: bold !important;
+        border: 1px solid #000 !important;
+    }
+    
+    .data-table td {
+        padding: 6px 10px !important;
+        border: 1px solid #000 !important;
+        vertical-align: top !important;
+    }
+    
+    .data-table tr:nth-child(even) td {
+        background: #f9f9f9 !important;
+    }
+    
+    .data-table tr:hover td {
+        background: #f0f0f0 !important;
+    }
+    
+    /* Сводная таблица */
+    .summary-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 20px !important;
+        margin-top: 20px !important;
+        page-break-inside: avoid !important;
+    }
+    
+    .summary-card {
+        border: 1px solid #000 !important;
+        padding: 20px !important;
+        text-align: center !important;
+        background: #fff !important;
+        border-radius: 0 !important;
+    }
+    
+    .card-icon {
+        font-size: 36pt !important;
+        color: #000 !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .card-title {
+        font-size: 12pt !important;
+        font-weight: bold !important;
+        margin-bottom: 10px !important;
+        color: #000 !important;
+    }
+    
+    .card-value {
+        font-size: 24pt !important;
+        font-weight: bold !important;
+        color: #000 !important;
+        margin: 10px 0 !important;
+    }
+    
+    .card-subtitle {
+        font-size: 10pt !important;
+        color: #555 !important;
+        font-style: italic !important;
+    }
+    
+    /* Детали безопасности */
+    .summary-details {
+        margin-top: 30px !important;
+        border: 2px solid #000 !important;
+        padding: 20px !important;
+        background: #fff !important;
+    }
+    
+    .summary-details h4 {
+        font-size: 14pt !important;
+        font-weight: bold !important;
+        margin-bottom: 15px !important;
+        color: #000 !important;
+        text-align: center !important;
+        text-transform: uppercase !important;
+    }
+    
+    .safety-assessment {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px !important;
+    }
+    
+    .assessment-item {
+        display: flex !important;
+        justify-content: space-between !important;
+        padding: 10px !important;
+        border-bottom: 1px solid #ddd !important;
+    }
+    
+    .assessment-item:last-child {
+        border-bottom: none !important;
+    }
+    
+    .assessment-label {
+        font-weight: bold !important;
+        color: #000 !important;
+    }
+    
+    .assessment-value {
+        font-weight: normal !important;
+        color: #000 !important;
+    }
+    
+    .assessment-value.status-warning {
+        color: #f39c12 !important;
+        font-weight: bold !important;
+    }
+    
+    .assessment-value.status-danger {
+        color: #e74c3c !important;
+        font-weight: bold !important;
+    }
+    
+    .critical-periods {
+        background: #fff3cd !important;
+        color: #856404 !important;
+        padding: 2px 8px !important;
+        display: inline-block !important;
+        font-weight: bold !important;
+    }
+    
+    /* Графики для печати */
+    .chart-container {
+        page-break-inside: avoid !important;
+        margin-bottom: 30px !important;
+    }
+    
+    .chart-container canvas {
+        max-width: 100% !important;
+        height: auto !important;
+        display: block !important;
+        margin: 0 auto !important;
+    }
+    
+    /* Колонтитулы */
+    @page {
+        size: A4 portrait;
+        margin: 20mm;
+        @top-center {
+            content: "ОТЧЕТ ПО МЕТЕОАНАЛИЗУ БВС";
+            font-size: 10pt;
+            color: #555;
+        }
+        @bottom-center {
+            content: "Страница " counter(page) " из " counter(pages);
+            font-size: 9pt;
+            color: #777;
+        }
+        @bottom-right {
+            content: "Дата формирования: " attr(data-date);
+            font-size: 8pt;
+            color: #999;
+        }
+    }
+    
+    /* Страница титульного листа */
+    .title-page {
+        page-break-after: always !important;
+        text-align: center !important;
+        padding: 50mm 20mm !important;
+    }
+    
+    .title-page h1 {
+        font-size: 36pt !important;
+        font-weight: bold !important;
+        margin-bottom: 20px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 3px !important;
+    }
+    
+    .title-page h2 {
+        font-size: 24pt !important;
+        font-weight: normal !important;
+        margin-bottom: 40px !important;
+        color: #555 !important;
+    }
+    
+    .title-page .logo {
+        width: 100px !important;
+        height: 100px !important;
+        margin: 0 auto 30px auto !important;
+        background: #000 !important;
+        border-radius: 50% !important;
+    }
+    
+    .title-page .meta {
+        font-size: 14pt !important;
+        line-height: 2 !important;
+        margin-top: 40px !important;
+    }
+    
+    /* Страница содержания */
+    .table-of-contents {
+        page-break-after: always !important;
+        padding: 20mm !important;
+    }
+    
+    .table-of-contents h2 {
+        text-align: center !important;
+        font-size: 20pt !important;
+        margin-bottom: 30px !important;
+        text-transform: uppercase !important;
+    }
+    
+    .toc-item {
+        padding: 8px 0 !important;
+        border-bottom: 1px dotted #999 !important;
+    }
+    
+    .toc-item a {
+        text-decoration: none !important;
+        color: #000 !important;
+        font-size: 12pt !important;
+    }
+    
+    .toc-item .page-number {
+        float: right !important;
+        font-size: 12pt !important;
+        color: #555 !important;
+    }
+    
+    /* Стили для карты в отчете */
+    .map-image {
+        width: 100% !important;
+        height: auto !important;
+        max-height: 180mm !important;
+        object-fit: contain !important;
+        margin: 20px 0 !important;
+        border: 1px solid #000 !important;
+        page-break-inside: avoid !important;
+    }
+    
+    .map-legend-print {
+        font-size: 9pt !important;
+        margin-top: 10px !important;
+        columns: 2 !important;
+        column-gap: 20px !important;
+    }
+    
+    .legend-item-print {
+        break-inside: avoid !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .legend-color-print {
+        display: inline-block !important;
+        width: 15px !important;
+        height: 15px !important;
+        margin-right: 8px !important;
+        vertical-align: middle !important;
+    }
+    
+    /* Стили для водяных знаков */
+    .watermark {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) rotate(-45deg) !important;
+        font-size: 80pt !important;
+        color: rgba(200, 200, 200, 0.5) !important;
+        z-index: -1 !important;
+        pointer-events: none !important;
+        opacity: 0.3 !important;
+        font-weight: bold !important;
+        text-transform: uppercase !important;
+        letter-spacing: 5px !important;
+    }
+    
+    /* Стили для шапки и подвала */
+    .header {
+        position: running(header) !important;
+        text-align: center !important;
+        padding: 10px 0 !important;
+        border-bottom: 1px solid #000 !important;
+        font-size: 10pt !important;
+    }
+    
+    .footer {
+        position: running(footer) !important;
+        text-align: center !important;
+        padding: 10px 0 !important;
+        border-top: 1px solid #000 !important;
+        font-size: 9pt !important;
+        color: #777 !important;
+    }
+    
+    /* Стили для пометки "Черновик" */
+    .draft-watermark {
+        position: fixed !important;
+        top: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        background: rgba(255, 0, 0, 0.05) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 120pt !important;
+        font-weight: bold !important;
+        color: rgba(255, 0, 0, 0.2) !important;
+        transform: rotate(-45deg) !important;
+        pointer-events: none !important;
+        z-index: 1000 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 10px !important;
+    }
+    
+    /* Стили для классифицированной информации */
+    .classified-header {
+        text-align: center !important;
+        background: #000 !important;
+        color: #fff !important;
+        padding: 5px !important;
+        font-weight: bold !important;
+        font-size: 14pt !important;
+        letter-spacing: 2px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    /* Стили для таблицы почасового прогноза */
+    .hourly-table-container {
+        width: 100% !important;
+        overflow: hidden !important;
+        page-break-inside: avoid !important;
+    }
+    
+    .hourly-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        font-size: 8pt !important;
+    }
+    
+    .hourly-table th {
+        background: #333 !important;
+        color: white !important;
+        padding: 6px !important;
+        text-align: center !important;
+        font-weight: bold !important;
+        border: 1px solid #000 !important;
+        writing-mode: vertical-rl !important;
+        transform: rotate(180deg) !important;
+        height: 80px !important;
+        min-width: 30px !important;
+    }
+    
+    .hourly-table td {
+        padding: 4px !important;
+        border: 1px solid #000 !important;
+        text-align: center !important;
+        height: 25px !important;
+    }
+    
+    .hourly-table tr:nth-child(odd) td {
+        background: #f5f5f5 !important;
+    }
+    
+    .hourly-table tr:nth-child(even) td {
+        background: #fff !important;
+    }
+    
+    .hourly-table .danger {
+        background: #ffebee !important;
+        font-weight: bold !important;
+    }
+    
+    .hourly-table .warning {
+        background: #fff3e0 !important;
+        font-weight: bold !important;
+    }
+    
+    /* Стили для легенды таблицы */
+    .table-legend {
+        font-size: 9pt !important;
+        margin-top: 15px !important;
+        padding: 10px !important;
+        border: 1px solid #000 !important;
+        background: #f9f9f9 !important;
+    }
+    
+    .legend-row {
+        display: flex !important;
+        align-items: center !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .legend-color-box {
+        width: 20px !important;
+        height: 20px !important;
+        margin-right: 10px !important;
+        border: 1px solid #000 !important;
+    }
+    
+    /* Стили для подписи ответственных лиц */
+    .signatures-section {
+        margin-top: 50px !important;
+        page-break-inside: avoid !important;
+    }
+    
+    .signature-row {
+        display: flex !important;
+        justify-content: space-between !important;
+        margin-bottom: 40px !important;
+    }
+    
+    .signature-col {
+        width: 30% !important;
+        text-align: center !important;
+    }
+    
+    .signature-line-long {
+        height: 1px !important;
+        background: #000 !important;
+        margin: 40px auto 10px auto !important;
+        width: 100% !important;
+    }
+    
+    .signature-title {
+        font-size: 11pt !important;
+        font-weight: bold !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .signature-name-field {
+        font-size: 11pt !important;
+        font-style: italic !important;
+        min-height: 20px !important;
+        border-bottom: 1px dashed #000 !important;
+        display: inline-block !important;
+        width: 100% !important;
+        text-align: center !important;
+    }
+    
+    .signature-date-field {
+        font-size: 10pt !important;
+        color: #777 !important;
+        margin-top: 5px !important;
+    }
+    
+    /* Стили для штампа утверждения */
+    .approval-stamp {
+        text-align: center !important;
+        margin: 30px auto !important;
+        width: 150px !important;
+        height: 150px !important;
+        border: 2px solid #000 !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 10px !important;
+    }
+    
+    .stamp-text {
+        font-size: 9pt !important;
+        font-weight: bold !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        line-height: 1.3 !important;
+    }
+    
+    .stamp-date {
+        font-size: 8pt !important;
+        margin-top: 5px !important;
+        font-style: italic !important;
+    }
+    
+    /* Стили для приложений */
+    .appendix {
+        page-break-before: always !important;
+    }
+    
+    .appendix-title {
+        text-align: center !important;
+        font-size: 16pt !important;
+        font-weight: bold !important;
+        margin: 30px 0 20px 0 !important;
+        text-transform: uppercase !important;
+        border-bottom: 2px solid #000 !important;
+        padding-bottom: 10px !important;
+    }
+    
+    .appendix-content {
+        font-size: 10pt !important;
+        line-height: 1.6 !important;
+    }
+    
+    /* Стили для сносок */
+    .footnote {
+        font-size: 8pt !important;
+        color: #666 !important;
+        margin-top: 30px !important;
+        padding-top: 10px !important;
+        border-top: 1px solid #ddd !important;
+    }
+    
+    .footnote-item {
+        margin-bottom: 5px !important;
+    }
+    
+    .footnote-number {
+        vertical-align: super !important;
+        font-size: 7pt !important;
+        margin-right: 3px !important;
+    }
+    
+    /* Стили для списка использованных источников */
+    .references {
+        page-break-before: always !important;
+    }
+    
+    .references-title {
+        text-align: center !important;
+        font-size: 16pt !important;
+        font-weight: bold !important;
+        margin: 30px 0 20px 0 !important;
+        text-transform: uppercase !important;
+        border-bottom: 2px solid #000 !important;
+        padding-bottom: 10px !important;
+    }
+    
+    .reference-item {
+        font-size: 10pt !important;
+        margin-bottom: 10px !important;
+        text-indent: -20px !important;
+        padding-left: 20px !important;
+    }
+    
+    /* Стили для грифа секретности */
+    .secrecy-label {
+        text-align: center !important;
+        background: #c00 !important;
+        color: white !important;
+        padding: 8px !important;
+        font-weight: bold !important;
+        font-size: 16pt !important;
+        letter-spacing: 3px !important;
+        margin: 20px 0 !important;
+        text-transform: uppercase !important;
+    }
+    
+    /* Стили для печати карты с маршрутом */
+    .map-with-route {
+        width: 100% !important;
+        height: 200mm !important;
+        margin: 20px 0 !important;
+        border: 2px solid #000 !important;
+        position: relative !important;
+    }
+    
+    .map-legend-overlay {
+        position: absolute !important;
+        bottom: 20px !important;
+        left: 20px !important;
+        background: white !important;
+        padding: 15px !important;
+        border: 1px solid #000 !important;
+        font-size: 9pt !important;
+        max-width: 300px !important;
+    }
+    
+    /* Стили для заголовка страницы */
+    .page-header {
+        text-align: center !important;
+        font-size: 14pt !important;
+        font-weight: bold !important;
+        margin-bottom: 20px !important;
+        page-break-after: avoid !important;
+    }
+    
+    /* Стили для номеров страниц */
+    .page-number {
+        position: absolute !important;
+        bottom: 10mm !important;
+        right: 20mm !important;
+        font-size: 10pt !important;
+        color: #777 !important;
+    }
+    
+    /* Стили для рамки документа */
+    .document-frame {
+        position: fixed !important;
+        top: 10mm !important;
+        left: 10mm !important;
+        right: 10mm !important;
+        bottom: 10mm !important;
+        border: 1px solid #000 !important;
+        pointer-events: none !important;
+        z-index: -1 !important;
+    }
+    
+    /* Стили для версии документа */
+    .document-version {
+        position: absolute !important;
+        top: 15mm !important;
+        right: 20mm !important;
+        font-size: 8pt !important;
+        color: #999 !important;
+    }
+    
+    /* Стили для печати на нескольких страницах */
+    .page-break {
+        page-break-after: always !important;
+    }
+    
+    /* Стили для таблицы маршрутов */
+    .routes-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        font-size: 10pt !important;
+        margin: 20px 0 !important;
+    }
+    
+    .routes-table th {
+        background: #333 !important;
+        color: white !important;
+        padding: 10px !important;
+        text-align: left !important;
+        font-weight: bold !important;
+        border: 1px solid #000 !important;
+    }
+    
+    .routes-table td {
+        padding: 8px 10px !important;
+        border: 1px solid #000 !important;
+        vertical-align: top !important;
+    }
+    
+    .routes-table tr:nth-child(even) td {
+        background: #f9f9f9 !important;
+    }
+    
+    .routes-table .route-name {
+        font-weight: bold !important;
+        font-size: 11pt !important;
+    }
+    
+    .routes-table .route-length {
+        color: #27ae60 !important;
+        font-weight: bold !important;
+    }
+    
+    .routes-table .route-status {
+        padding: 3px 8px !important;
+        border-radius: 3px !important;
+        font-weight: bold !important;
+        display: inline-block !important;
+    }
+    
+    .routes-table .route-status.safe {
+        background: #d4edda !important;
+        color: #155724 !important;
+    }
+    
+    .routes-table .route-status.warning {
+        background: #fff3cd !important;
+        color: #856404 !important;
+    }
+    
+    .routes-table .route-status.danger {
+        background: #f8d7da !important;
+        color: #721c24 !important;
+    }
+    
+    /* Стили для печати графиков */
+    .chart-print {
+        page-break-inside: avoid !important;
+        margin-bottom: 30px !important;
+    }
+    
+    .chart-print-title {
+        text-align: center !important;
+        font-size: 14pt !important;
+        font-weight: bold !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .chart-print-image {
+        width: 100% !important;
+        height: auto !important;
+        max-height: 150mm !important;
+        object-fit: contain !important;
+        border: 1px solid #000 !important;
+    }
+    
+    .chart-print-legend {
+        font-size: 9pt !important;
+        margin-top: 10px !important;
+        columns: 2 !important;
+        column-gap: 20px !important;
+    }
+    
+    /* Стили для печати на ландшафтной ориентации */
+    @page landscape {
+        size: A4 landscape;
+        margin: 15mm;
+    }
+    
+    .landscape {
+        page: landscape !important;
+    }
+    
+    .landscape .report-preview,
+    .landscape .print-content {
+        padding: 15mm !important;
+    }
+    
+    .landscape .weather-grid {
+        grid-template-columns: repeat(6, 1fr) !important;
+    }
+    
+    .landscape .summary-grid {
+        grid-template-columns: repeat(6, 1fr) !important;
+    }
+    
+    .landscape .safety-assessment {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+    
+    /* Стили для пометки "Копия" */
+    .copy-watermark {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) rotate(-45deg) !important;
+        font-size: 60pt !important;
+        color: rgba(200, 200, 200, 0.7) !important;
+        z-index: 1000 !important;
+        pointer-events: none !important;
+        font-weight: bold !important;
+        text-transform: uppercase !important;
+        letter-spacing: 5px !important;
+        opacity: 0.5 !important;
+    }
+}
